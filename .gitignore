@@ -1,0 +1,29 @@
+# Logs
+logs
+*.log
+
+node_modules
+dist
+dist-ssr
+*.local
+
+
+# python
+**/__pycache__/
+**.pyc
+# 忽略pycharm
+**/.idea/
+# 忽略虚拟环境
+**/venv
+
+
+# Editor directories and files
+**/.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
