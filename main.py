@@ -7,11 +7,15 @@ import os
 from pathlib import Path
 from collections import Counter
 import albumentations as A
+import sys
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # global
-    kagglehub_crop_pests_dataset_path = r'C:\Users\shenyanjian\.cache\kagglehub\datasets\rupankarmajumdar\crop-pests-dataset\versions\2'
+    kagglehub_crop_pests_dataset_path = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\shenyanjian\.cache\kagglehub\datasets\rupankarmajumdar\crop-pests-dataset\versions\2'
+    print(kagglehub_crop_pests_dataset_path)
+
+
     train_path = os.path.join(kagglehub_crop_pests_dataset_path, 'train')
     train_images_path = os.path.join(train_path, 'images')
     train_labels_path = os.path.join(train_path, 'labels')
