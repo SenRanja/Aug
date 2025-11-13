@@ -8,7 +8,6 @@
 # 如何下载数据
 
     pip install -U pip setuptools wheel
-    pip install kagglehub
 
 ```
 import kagglehub
