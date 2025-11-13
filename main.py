@@ -17,7 +17,7 @@ if __name__ == '__main__':
     train_labels_path = os.path.join(train_path, 'labels')
 
     # 任务一：删除我们周一上午的删除的打标框
-    with open(os.path.join(kagglehub_crop_pests_dataset_path, 'data.yaml'), 'r', encoding='utf-8') as f:
+    with open('./data.yaml', 'r', encoding='utf-8') as f:
         yaml_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
         f.close()
 
