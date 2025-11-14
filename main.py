@@ -55,13 +55,13 @@ if __name__ == '__main__':
                 class_id = int(parts[0])  # 第一个数是类别编号
                 class_counter[class_id] += 1
     # 打印结果
-    print("各类别标注框数量：")
+    print("Number of label boxes for each category:")
     for cls_id, count in sorted(class_counter.items()):
-        print(f"类别 {cls_id}: {count} 个标注框")
+        print(f"Category {cls_id}: {count} label boxes")
 
     # 可选：统计总数
-    print("\n总标注框数:", sum(class_counter.values()))
-    print("总类别数:", len(class_counter))
+    print("\nTotal number of annotation boxes:", sum(class_counter.values()))
+    print("Total number of categories:", len(class_counter))
 
     # 任务三：对少数类进行动态增强，直到最小类与最大类数量差距 <= 1.4倍
     with open(os.path.join(kagglehub_crop_pests_dataset_path, 'data.yaml'), 'r', encoding='utf-8') as f:
@@ -94,14 +94,14 @@ if __name__ == '__main__':
         min_class_count = min(class_counter.values())
         ratio = max_class_count / min_class_count
 
-        print(f"\n第 {round_idx + 1} 轮增强后统计：")
+        print(f"\n {round_idx + 1} th statistics after round enhancement:")
         for cls_id, count in sorted(class_counter.items()):
-            print(f"类别 {cls_id} ({class_names[cls_id]}): {count} 个标注框")
-        print(f"当前最大类: {max_class_count}, 最小类: {min_class_count}, 差距比: {ratio:.2f}")
+            print(f"Category {cls_id} ({class_names[cls_id]}): {count} label boxes")
+        print(f"Current largest class: {max_class_count} Minimal class:{min_class_count} Difference ratio:{ratio:.2f}")
 
         # 达到平衡条件则退出
         if ratio <= 1.4:
-            print("\n✅ 所有类别已基本平衡，增强结束。")
+            print("\n All categories are now basically balanced; enhancements are complete.")
             break
 
         # 对少数类增强10%
@@ -110,7 +110,7 @@ if __name__ == '__main__':
                 continue  # 已接近平衡
             increase_num = max(1, int(count * 0.1))  # 每次增加10%
             cls_name = class_names[cls_id]
-            print(f"\n增强类别 {cls_name}（当前 {count} 个，增加约 {increase_num} 张）")
+            print(f"\nEnhanced Category {cls_name} (current {count}, Increase by approximately {increase_num})")
 
             processed = 0
             for label_path in Path(train_labels_path).glob("*.txt"):
@@ -164,10 +164,10 @@ if __name__ == '__main__':
                 class_id = int(parts[0])  # 第一个数是类别编号
                 class_counter[class_id] += 1
     # 打印结果
-    print("各类别标注框数量：")
+    print("Number of label boxes for each category:")
     for cls_id, count in sorted(class_counter.items()):
-        print(f"类别 {cls_id}: {count} 个标注框")
+        print(f"Category {cls_id}: {count} label box")
 
     # 可选：统计总数
-    print("\n总标注框数:", sum(class_counter.values()))
-    print("总类别数:", len(class_counter))
+    print("\nTotal number of annotation boxes:", sum(class_counter.values()))
+    print("Total number of categories:", len(class_counter))
