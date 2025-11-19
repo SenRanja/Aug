@@ -9,7 +9,7 @@ from collections import Counter
 import albumentations as A
 
 def count_classes(label_dir: Path):
-    """统计当前数据集中每个类别的标注框数量"""
+    """Count the number of bounding boxes for each category in the current dataset"""
     counter = Counter()
     for txt in label_dir.glob("*.txt"):
         with open(txt, "r", encoding="utf-8") as f:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     train_images_path = os.path.join(train_path, 'images')
     train_labels_path = os.path.join(train_path, 'labels')
 
-    # 任务一：删除我们周一上午的删除的打标框
+    # Task 1: Delete the deletion markers from our Monday morning assignments.
     with open('data.yaml', 'r', encoding='utf-8') as f:
         yaml_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
         f.close()
@@ -41,8 +41,8 @@ if __name__ == '__main__':
         txt_path = os.path.join(train_labels_path, f"{Path(single_mistake_pic).stem}.txt")
         label_flag = os.path.exists(txt_path)
         if not (img_flag and label_flag):
-            # label和img无法对应上的，此处打印
-            # 如果运行过后可以注释
+            # If the label and img do not match, print this:
+            # You can comment this out after running the program
             # print("ERROR", single_mistake_pic, jpg_path, img_flag, txt_path, label_flag)
             pass
         else:
@@ -51,8 +51,8 @@ if __name__ == '__main__':
             os.remove(txt_path)
             print("Removed", txt_path)
 
-    # 任务二：统计当前各类别打框数量
-    class_counter = Counter() # 初始化计数器
+    # Task 2: Count the number of boxes in each category.
+    class_counter = Counter() # Initialize the counter
 
     for txt_file in Path(train_labels_path).rglob("*.txt"):
         with open(txt_file, "r", encoding="utf-8") as f:
@@ -61,26 +61,26 @@ if __name__ == '__main__':
                 if not line:
                     continue
                 parts = line.split()
-                class_id = int(parts[0])  # 第一个数是类别编号
+                class_id = int(parts[0]) # The first number is the category number
                 class_counter[class_id] += 1
-    # 打印结果
-    print("各类别标注框数量：")
+    # Print results
+    print("Number of label boxes for each category:")
     for cls_id, count in sorted(class_counter.items()):
-        print(f"类别 {cls_id}: {count} 个标注框")
+        print(f"category {cls_id}: {count} label boxes")
 
-    # 可选：统计总数
-    print("\n总标注框数:", sum(class_counter.values()))
-    print("总类别数:", len(class_counter))
+    # Optional: Count the total
+    print("\nTotal number of annotation boxes:", sum(class_counter.values()))
+    print("Total number of categories:", len(class_counter))
 
-    # 任务三：对少数类进行增强
+    # Task 3: Enhance minority classes
     with open(os.path.join(kagglehub_crop_pests_dataset_path, 'data.yaml'), 'r', encoding='utf-8') as f:
-        # 这个data.yaml是数据集的那个类别yaml
+        # This data.yaml file represents the category yaml of the dataset.
         data_yaml_dict = yaml.load(f.read(), Loader=yaml.FullLoader)
 
     print(data_yaml_dict)
     class_names = data_yaml_dict['names']
     max_class_count = max(class_counter.values())
-    # 定义增强策略
+    # Define enhancement strategy
     augment = A.Compose([
         A.RandomBrightnessContrast(p=0.5),
         A.HorizontalFlip(p=0.5),
@@ -95,26 +95,26 @@ if __name__ == '__main__':
         max_class = max(class_counter.values())
         min_class = min(class_counter.values())
         ratio = max_class / min_class
-        print(f"\n=== 第 {round_num} 轮增强 ===")
-        print("当前类别统计：")
+        print(f"\n===  {round_num} th Augmentation ===")
+        print("Current category statistics:")
         for cid, cnt in sorted(class_counter.items()):
             print(f"  {class_names[cid]:10s}: {cnt}")
-        print(f"最大类: {max_class}, 最小类: {min_class}, 比例差距: {ratio:.2f}")
+        print(f"Maximum class: {max_class}, Minimal class: {min_class}, Proportional Difference: {ratio:.2f}")
 
-        # 判断是否已达平衡阈值
+        # Determine if the equilibrium threshold has been reached
         if ratio <= 1.4:
-            print("\n✅ 达到平衡目标，增强结束。")
+            print("\n✅ Once the balance goal is achieved, the enhancement process ends.")
             break
 
-        # 逐类增强：少于 max_class / 1.4 的类需要增强
+        # Class-by-class enhancement: Classes with fewer than max_class / 1.4 need to be enhanced.
         for cls_id, count in class_counter.items():
             cls_name = class_names[cls_id]
             if count * 1.4 >= max_class:
-                continue  # 已接近，不增强
-            target_add = int(count * 0.1)  # 每轮增加 10%
-            print(f"\n增强类别 {cls_name}：当前 {count}，计划新增约 {target_add}")
+                continue  # Already close, no further enhancement
+            target_add = int(count * 0.1)  # Increase by 10% per round
+            print(f"\nEnhanced Category {cls_name}: Current {count}, aim to add {target_add}")
 
-            # 找出含该类的图片
+            # Find images containing this category
             for label_path in Path(train_labels_path).glob("*.txt"):
                 with open(label_path, "r") as f:
                     lines = [line.strip().split() for line in f if line.strip()]
@@ -132,7 +132,7 @@ if __name__ == '__main__':
                     class_labels.append(int(float(parts[0])))
                     bboxes.append(list(map(float, parts[1:])))
 
-                # 随机增强多次，直到达到目标数或略超
+                # Perform random boosting multiple times until the target number is reached or slightly exceeded.
                 for i in range(target_add // max(1, len(bboxes)) + 1):
                     aug_result = augment(image=img, bboxes=bboxes, class_labels=class_labels)
                     aug_img = aug_result["image"]
@@ -148,10 +148,10 @@ if __name__ == '__main__':
                         for cid, bbox in zip(aug_labels, aug_bboxes):
                             f.write(f"{int(cid)} {' '.join(map(lambda x: f'{x:.6f}', bbox))}\n")
 
-        print(f"\n--- 第 {round_num} 轮增强完成，重新统计类别 ---")
+        print(f"\n--- No. {round_num} After the enhancement is completed, the categories will be recalculated. ---")
 
-    # 任务四：再次统计当前各类别打框数量
-    class_counter = Counter() # 初始化计数器
+    # Task 4: Recount the number of boxes in each category.
+    class_counter = Counter() # Initialize the counter
 
     for txt_file in Path(train_labels_path).rglob("*.txt"):
         with open(txt_file, "r", encoding="utf-8") as f:
@@ -160,13 +160,13 @@ if __name__ == '__main__':
                 if not line:
                     continue
                 parts = line.split()
-                class_id = int(parts[0])  # 第一个数是类别编号
+                class_id = int(parts[0]) # The first number is the category number
                 class_counter[class_id] += 1
-    # 打印结果
-    print("各类别标注框数量：")
+    # Print results
+    print("Number of label boxes for each category:")
     for cls_id, count in sorted(class_counter.items()):
-        print(f"类别 {cls_id}: {count} 个标注框")
+        print(f"category {cls_id}: {count} label boxes")
 
-    # 可选：统计总数
-    print("\n总标注框数:", sum(class_counter.values()))
-    print("总类别数:", len(class_counter))
+    # Optional: Count the total
+    print("\nTotal number of annotation boxes:", sum(class_counter.values()))
+    print("Total number of categories:", len(class_counter))
