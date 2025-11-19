@@ -1,6 +1,8 @@
 
 This script is based on data cleaning we collaborated on on November 10, 2025, and performs **data preprocessing steps** on the "rupankarmajumdar/crop-pests-dataset" dataset.
 
+[This repo link: Aug](https://github.com/SenRanja/Aug)
+
 # Environmental Preparation
 
     pip install albumentations kagglehub
@@ -9,7 +11,7 @@ This script is based on data cleaning we collaborated on on November 10, 2025, a
 
     pip install -U pip setuptools wheel
 
-```
+```python
 import kagglehub
 
 path = kagglehub.dataset_download("rupankarmajumdar/crop-pests-dataset")
@@ -31,7 +33,7 @@ Delete `# /root/.cache/kagglehub/datasets/rupankarmajumdar/crop-pests-dataset/ve
 
 # Category Balance
 
-Liu has uploaded the image set to YOLO Hub: `https://hub.ultralytics.com/datasets/dL8pDaojLoJ4WFIuNV2l`, which can be viewed for labeling reference.
+Liu has uploaded the image set to YOLO Hub: [YOLOhub of argoPest](https://hub.ultralytics.com/datasets/dL8pDaojLoJ4WFIuNV2l), which can be viewed for labeling reference.
 
 As shown in the figure, the following quantities represent the number of bounding boxes (not the number of images), indicating an imbalance.
 
@@ -66,11 +68,9 @@ Because there is a possibility of "aug after aug", image paths (including img an
 
 Configuration options are for reference; the main thing is that you need to change the address of your own dataset.
 
-1. The main function in main.py
-
 # How to run
 
-python main.py
+    python main.py
 
 After the script finishes running, the categories will be basically balanced.
 
